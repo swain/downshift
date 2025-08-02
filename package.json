@@ -1,0 +1,47 @@
+{
+  "name": "downshift",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/swain/downshift#readme",
+  "bugs": {
+    "url": "https://github.com/swain/downshift/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/swain/downshift.git"
+  },
+  "license": "MIT",
+  "author": "Swain Molster <swain.molster@gmail.com>",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "login": "aws sso login --profile downshift-admin",
+    "console": "npx swain-aws-console downshift-admin",
+    "build": "esbuild 'src/lambdas/*.ts' --bundle --platform=node --target=node22 --outdir=dist --external:dtrace-provider",
+    "plan": "npm run build && cdktf diff",
+    "deploy": "npm run build && cdktf deploy --auto-approve"
+  },
+  "dependencies": {
+    "@aws-lambda-powertools/parameters": "^2.20.0",
+    "@aws-sdk/client-dynamodb": "^3.817.0",
+    "@aws-sdk/client-lambda": "^3.817.0",
+    "@aws-sdk/client-ssm": "^3.821.0",
+    "@aws-sdk/lib-dynamodb": "^3.817.0",
+    "@biomejs/biome": "^1.9.4",
+    "@cdktf/provider-aws": "^19.64.0",
+    "@lifeomic/dynamost": "^1.6.0",
+    "@types/aws-lambda": "^8.10.149",
+    "@types/bunyan": "^1.8.11",
+    "@types/mailparser": "^3.4.6",
+    "@types/node": "^22.15.23",
+    "bunyan": "^1.8.15",
+    "cdktf": "0.20.11",
+    "constructs": "^10.4.2",
+    "dayjs": "^1.11.13",
+    "esbuild": "^0.25.5",
+    "nanoid": "^5.1.5",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "zod": "^3.25.39"
+  }
+}
