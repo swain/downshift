@@ -1,13 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { TextInput, TouchableOpacity, View } from "react-native";
+import { AppButton } from "../components/AppButton";
+import { AppText } from "../components/AppText";
+import { makeStyles } from "../utils/styles";
 
 interface FoodItem {
   id: string;
@@ -115,20 +112,23 @@ export default function Home() {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity
+          <AppButton
+            title="← Back"
             onPress={handleBackToSearch}
             style={styles.backButton}
-          >
-            <Text style={styles.backText}>← Back</Text>
-          </TouchableOpacity>
-          <Text style={styles.title}>How much?</Text>
-          <Text style={styles.subtitle}>{selectedFood.name}</Text>
+          />
+          <AppText variant="title" color="text">
+            How much?
+          </AppText>
+          <AppText variant="body" color="textSecondary">
+            {selectedFood.name}
+          </AppText>
         </View>
 
         <View style={styles.amountContainer}>
-          <Text style={styles.amountLabel}>
+          <AppText variant="header" color="text">
             Amount ({selectedFood.servingSize})
-          </Text>
+          </AppText>
           <TextInput
             style={styles.amountInput}
             value={selectedAmount}
@@ -139,50 +139,35 @@ export default function Home() {
           />
 
           <View style={styles.caloriePreview}>
-            <Text style={styles.caloriePreviewText}>
+            <AppText variant="body" color="textSecondary">
               {Math.round(
                 selectedFood.calories *
                   Number.parseFloat(selectedAmount || "0"),
               )}{" "}
               calories
-            </Text>
+            </AppText>
           </View>
 
           <View style={styles.quickAmounts}>
             {["0.5", "1", "1.5", "2"].map((amount) => (
-              <TouchableOpacity
+              <AppButton
                 key={amount}
+                title={amount}
+                onPress={() => setSelectedAmount(amount)}
                 style={[
                   styles.quickAmountButton,
                   selectedAmount === amount && styles.quickAmountButtonActive,
                 ]}
-                onPress={() => setSelectedAmount(amount)}
-              >
-                <Text
-                  style={[
-                    styles.quickAmountText,
-                    selectedAmount === amount && styles.quickAmountTextActive,
-                  ]}
-                >
-                  {amount}
-                </Text>
-              </TouchableOpacity>
+              />
             ))}
           </View>
         </View>
 
-        <TouchableOpacity
-          style={[
-            styles.submitButton,
-            isSubmitting && styles.submitButtonDisabled,
-          ]}
+        <AppButton
+          title={isSubmitting ? "Adding..." : "Add to Tracker"}
           onPress={handleSubmit}
           disabled={isSubmitting}
-        >
-          <Text style={styles.submitButtonText}>
-            {isSubmitting ? "Adding..." : "Add to Tracker"}
-          </Text>
-        </TouchableOpacity>
+        />
       </View>
     );
   }
@@ -190,8 +175,12 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Calorie Tracker</Text>
-        <Text style={styles.subtitle}>Search for foods to track</Text>
+        <AppText variant="title" color="text">
+          Calorie Tracker
+        </AppText>
+        <AppText variant="body" color="textSecondary">
+          Search for foods to track
+        </AppText>
       </View>
 
       <View style={styles.searchContainer}>
@@ -207,7 +196,15 @@ export default function Home() {
       </View>
 
       <View style={styles.resultsContainer}>
-        {isSearching && <Text style={styles.loadingText}>Searching...</Text>}
+        {isSearching && (
+          <AppText
+            variant="body"
+            color="textSecondary"
+            style={styles.centerText}
+          >
+            Searching...
+          </AppText>
+        )}
 
         {!isSearching &&
           searchResults.map((item) => (
@@ -217,55 +214,47 @@ export default function Home() {
               onPress={() => handleFoodSelect(item)}
               activeOpacity={0.7}
             >
-              <Text style={styles.foodName}>{item.name}</Text>
-              <Text style={styles.servingSize}>{item.servingSize}</Text>
+              <AppText variant="header" color="text">
+                {item.name}
+              </AppText>
+              <AppText variant="details" color="textSecondary">
+                {item.servingSize}
+              </AppText>
             </TouchableOpacity>
           ))}
 
-        {!isSearching && searchQuery && searchResults.length === 0 && (
-          <Text style={styles.noResults}>No foods found</Text>
+        {!isSearching && !!searchQuery && searchResults.length === 0 && (
+          <AppText variant="body" color="placeholder" style={styles.centerText}>
+            No foods found
+          </AppText>
         )}
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = makeStyles((theme) => ({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    paddingHorizontal: 20,
-    paddingTop: 60,
+    backgroundColor: theme.colors.background,
+    paddingHorizontal: theme.spacing(5),
+    paddingTop: theme.spacing(15),
   },
   header: {
-    marginBottom: 30,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
+    marginBottom: theme.spacing(7.5),
   },
   backButton: {
-    marginBottom: 10,
-  },
-  backText: {
-    fontSize: 16,
-    color: "#007AFF",
-    fontWeight: "500",
+    marginBottom: theme.spacing(2.5),
+    alignSelf: "flex-start",
   },
   searchContainer: {
-    marginBottom: 20,
+    marginBottom: theme.spacing(5),
   },
   searchInput: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: theme.colors.surface,
     borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingHorizontal: theme.spacing(4),
+    paddingVertical: theme.spacing(4),
     fontSize: 16,
     borderWidth: 2,
     borderColor: "transparent",
@@ -278,100 +267,45 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    backgroundColor: "#f9f9f9",
+    paddingVertical: theme.spacing(4),
+    paddingHorizontal: theme.spacing(4),
+    backgroundColor: theme.colors.surface,
     borderRadius: 8,
-    marginBottom: 8,
+    marginBottom: theme.spacing(2),
   },
-  foodName: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#333",
-  },
-  servingSize: {
-    fontSize: 14,
-    color: "#666",
-  },
-  loadingText: {
+  centerText: {
     textAlign: "center",
-    color: "#666",
-    fontSize: 16,
-    marginTop: 20,
-  },
-  noResults: {
-    textAlign: "center",
-    color: "#999",
-    fontSize: 16,
-    marginTop: 20,
+    marginTop: theme.spacing(5),
   },
   amountContainer: {
     flex: 1,
-    marginBottom: 30,
-  },
-  amountLabel: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#333",
-    marginBottom: 12,
+    marginBottom: theme.spacing(7.5),
   },
   amountInput: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: theme.colors.surface,
     borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingHorizontal: theme.spacing(4),
+    paddingVertical: theme.spacing(4),
     fontSize: 24,
     fontWeight: "600",
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: theme.spacing(5),
     minHeight: 60,
   },
   caloriePreview: {
     alignItems: "center",
-    marginBottom: 30,
-  },
-  caloriePreviewText: {
-    fontSize: 18,
-    color: "#666",
-    fontWeight: "500",
+    marginBottom: theme.spacing(7.5),
   },
   quickAmounts: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 20,
+    marginBottom: theme.spacing(5),
   },
   quickAmountButton: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
-    paddingVertical: 12,
-    borderRadius: 8,
-    marginHorizontal: 4,
-    alignItems: "center",
+    marginHorizontal: theme.spacing(1),
   },
   quickAmountButtonActive: {
-    backgroundColor: "#007AFF",
+    backgroundColor: theme.colors.primary,
   },
-  quickAmountText: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#333",
-  },
-  quickAmountTextActive: {
-    color: "#fff",
-  },
-  submitButton: {
-    backgroundColor: "#007AFF",
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: "center",
-    marginBottom: 30,
-  },
-  submitButtonDisabled: {
-    backgroundColor: "#999",
-  },
-  submitButtonText: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#fff",
-  },
-});
+}));

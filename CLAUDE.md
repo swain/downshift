@@ -27,8 +27,26 @@ The project uses Biome for formatting, linting, and import organization:
 
 ### Styling
 
-- React Native StyleSheet for cross-platform styling
-- Geist font family (sans and mono variants)
+- React Native StyleSheet for cross-platform styling. But, do not directly use `StyleSheet.create(...)` -- instead use the `makeStyles` helper to create styles:
+
+    ```tsx
+    import { makeStyles } from "../utils/styles";
+
+    const styles = makeStyles((theme) => ({
+      // ...react native style entries can go here and reference the theme.
+      foo: {
+        backgroundColor: theme.colors.background
+      }
+    }));
+    
+    export const MyComponent = () => {
+      return <View style={styles.foo}>
+    }
+    ```
+
+### Shared Components
+
+- Be sure to use the `AppText` and `AppButton` components when building new UI, instead of using the lower-level react-native elements.
 
 ## Key Integration Points
 
