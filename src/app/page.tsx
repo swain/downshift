@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { TextInput, TouchableOpacity, View } from "react-native";
 import { AppButton } from "../components/AppButton";
 import { AppText } from "../components/AppText";
+import { CurrentAccount } from "../utils/client-auth";
 import { makeStyles } from "../utils/styles";
 
 interface FoodItem {
@@ -110,9 +111,19 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
-      <AppText style={styles.header} variant="title" color="text">
-        Downshift
-      </AppText>
+      <View style={styles.headerContainer}>
+        <AppText style={styles.header} variant="title" color="text">
+          Downshift
+        </AppText>
+        <TouchableOpacity
+          onPress={CurrentAccount.clear}
+          style={styles.logoutButton}
+        >
+          <AppText variant="details" color="textSecondary">
+            Logout
+          </AppText>
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.searchContainer}>
         <TouchableOpacity
@@ -244,9 +255,20 @@ const styles = makeStyles((theme) => ({
     paddingHorizontal: theme.spacing(5),
     paddingTop: theme.spacing(15),
   },
-  header: {
-    alignSelf: "center",
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: theme.spacing(7.5),
+  },
+  header: {
+    flex: 1,
+    textAlign: "center",
+  },
+  logoutButton: {
+    position: "absolute",
+    right: 0,
+    padding: theme.spacing(2),
   },
   searchContainer: {
     marginBottom: theme.spacing(5),

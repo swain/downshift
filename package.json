@@ -22,7 +22,8 @@
     "plan": "npm run build && cdktf diff",
     "deploy": "cdktf deploy --auto-approve",
     "dev": "next dev",
-    "start": "next start"
+    "start": "next start",
+    "lint": "biome check"
   },
   "dependencies": {
     "@aws-lambda-powertools/parameters": "^2.20.0",
@@ -36,6 +37,7 @@
     "@lifeomic/dynamost": "^1.6.0",
     "@types/aws-lambda": "^8.10.149",
     "@types/bunyan": "^1.8.11",
+    "@types/js-cookie": "^3.0.6",
     "@types/mailparser": "^3.4.6",
     "@types/node": "^22.15.23",
     "@types/react": "^19",
@@ -44,6 +46,7 @@
     "cdktf": "0.20.11",
     "constructs": "^10.4.2",
     "dayjs": "^1.11.13",
+    "js-cookie": "^3.0.5",
     "nanoid": "^5.1.5",
     "next": "15.4.5",
     "react": "19.1.0",
@@ -53,6 +56,7 @@
     "react-native-web": "^0.21.0",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
-    "zod": "^3.25.39"
+    "zod": "^3.25.39",
+    "zustand": "^5.0.7"
   }
 }
