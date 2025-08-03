@@ -13,10 +13,14 @@ import { AppText } from "./AppText";
 
 export const AuthScreen: React.FC = () => {
   const [enteredKey, setEnteredKey] = useState("");
+  const [showSaveMessage, setShowSaveMessage] = useState(false);
 
-  const handleGenerateKey = () => {
+  const handleGenerateKey = async () => {
     const newKey = generateAccountKey();
     setEnteredKey(newKey);
+
+    await navigator.clipboard.writeText(newKey);
+    setShowSaveMessage(true);
   };
 
   const handleEnterExistingKey = () => {
@@ -43,6 +47,18 @@ export const AuthScreen: React.FC = () => {
         onPress={handleGenerateKey}
         style={styles.button}
       />
+
+      {showSaveMessage && (
+        <View style={styles.saveMessage}>
+          <AppText
+            style={styles.saveMessageText}
+            variant="body"
+            color="primary"
+          >
+            ✓ Key copied to clipboard! Please save it somewhere safe.
+          </AppText>
+        </View>
+      )}
       <AppText style={styles.orText} variant="body" color="textSecondary">
         OR
       </AppText>
@@ -113,5 +129,16 @@ const styles = makeStyles((theme) => ({
     borderWidth: 2,
     borderColor: theme.colors.border,
     minHeight: 60,
+  },
+  saveMessage: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: 8,
+    padding: theme.spacing(3),
+    marginTop: theme.spacing(3),
+    alignItems: "center",
+  },
+  saveMessageText: {
+    textAlign: "center",
+    fontWeight: "500",
   },
 }));

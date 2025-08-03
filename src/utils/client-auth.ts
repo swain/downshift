@@ -43,10 +43,14 @@ export const CurrentAccount = {
       expires: 365 * 10,
     });
     _store.setState({ currentAccount: key });
+    // Reload page to sync server-side auth state
+    window.location.reload();
   },
   clear: () => {
     Cookies.remove(COOKIE_NAME);
     _store.setState({ currentAccount: "" });
+    // Reload page to sync server-side auth state
+    window.location.reload();
   },
 };
 
