@@ -1,8 +1,9 @@
 import { DynamodbTable } from "@cdktf/provider-aws/lib/dynamodb-table";
 import { AwsProvider } from "@cdktf/provider-aws/lib/provider";
+import { TlsProvider } from "@cdktf/provider-tls/lib/provider";
 import { App, S3Backend, TerraformStack } from "cdktf";
 import type { Construct } from "constructs";
-import { lambda } from "./lambda";
+import { vercelAuth } from "./vercel-auth";
 
 export class InfraStack extends TerraformStack {
   constructor(scope: Construct, id: string) {
@@ -11,14 +12,10 @@ export class InfraStack extends TerraformStack {
     new AwsProvider(this, "aws", {
       region: "us-east-1",
       profile: "downshift-admin",
-      defaultTags: [
-        {
-          tags: {
-            Project: "messaging-bot",
-          },
-        },
-      ],
+      defaultTags: [{ tags: { Project: "downshift" } }],
     });
+
+    new TlsProvider(this, "tls");
 
     new S3Backend(this, {
       profile: "downshift-admin",
@@ -37,17 +34,12 @@ export class InfraStack extends TerraformStack {
       ttl: { enabled: true, attributeName: "ttl" },
     });
 
-    const creatorLambda = lambda(this, "message-creator", {
-      functionName: "message-creator",
-      runtime: "nodejs22.x",
-      filename: "message-creator",
-      policy: [
-        {
-          actions: ["dynamodb:PutItem"],
-          resources: [table.arn],
-        },
-      ],
-    });
+    vercelAuth(this, [
+      {
+        actions: ["dynamodb:PutItem"],
+        resources: [table.arn],
+      },
+    ]);
   }
 }
 

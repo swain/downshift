@@ -20,7 +20,7 @@
     "console": "npx swain-aws-console downshift-admin",
     "build": "next build",
     "plan": "npm run build && cdktf diff",
-    "deploy": "npm run build && cdktf deploy --auto-approve",
+    "deploy": "cdktf deploy --auto-approve",
     "dev": "next dev",
     "start": "next start"
   },
@@ -32,23 +32,24 @@
     "@aws-sdk/lib-dynamodb": "^3.817.0",
     "@biomejs/biome": "^1.9.4",
     "@cdktf/provider-aws": "^19.64.0",
+    "@cdktf/provider-tls": "^10.1.0",
     "@lifeomic/dynamost": "^1.6.0",
     "@types/aws-lambda": "^8.10.149",
     "@types/bunyan": "^1.8.11",
     "@types/mailparser": "^3.4.6",
+    "@types/node": "^22.15.23",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/node": "^22.15.23",
     "bunyan": "^1.8.15",
     "cdktf": "0.20.11",
     "constructs": "^10.4.2",
     "dayjs": "^1.11.13",
     "nanoid": "^5.1.5",
-    "tsx": "^4.19.4",
-    "typescript": "^5.8.3",
-    "zod": "^3.25.39",
+    "next": "15.4.5",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.4.5"
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "zod": "^3.25.39"
   }
 }
