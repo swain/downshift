@@ -174,14 +174,9 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <AppText variant="title" color="text">
-          Calorie Tracker
-        </AppText>
-        <AppText variant="body" color="textSecondary">
-          Search for foods to track
-        </AppText>
-      </View>
+      <AppText style={styles.header} variant="title" color="text">
+        Downshift
+      </AppText>
 
       <View style={styles.searchContainer}>
         <TextInput
@@ -241,6 +236,7 @@ const styles = makeStyles((theme) => ({
     paddingTop: theme.spacing(15),
   },
   header: {
+    alignSelf: "center",
     marginBottom: theme.spacing(7.5),
   },
   backButton: {
