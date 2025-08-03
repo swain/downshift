@@ -258,6 +258,9 @@ const styles = makeStyles((theme) => ({
   content: {
     flex: 1,
     padding: theme.spacing(5),
+    maxWidth: 800,
+    width: "100%",
+    marginHorizontal: "auto",
   },
   headerContainer: {
     flexDirection: "row",
