@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["node_modules/**", "ios/**", "android/**"]
+    "ignore": ["node_modules/**", ".next"]
   },
   "formatter": {
     "enabled": true,
@@ -26,7 +26,8 @@
         "noBarrelFile": "error"
       },
       "complexity": {
-        "noBannedTypes": "off"
+        "noBannedTypes": "off",
+        "useArrowFunction": "error"
       },
       "suspicious": {
         "noExplicitAny": "off"

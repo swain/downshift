@@ -36,3 +36,5 @@ This is a Next.js application with React Native Web integration and AWS infrastr
 - Be sure to use the `AppText` and `AppButton` components when building new UI, instead of using the lower-level React Native elements.
 
 - If you make changes in a session that consist of more than 1-2 files changes, run Biome formatting on the new files after all your changes are complete.
+
+- Always prefer arrow functions over `function` declarations, even for top-level function declarations.
