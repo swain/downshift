@@ -4,30 +4,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Next.js application with React Native Web integration and AWS infrastructure managed by CDKTF (Terraform CDK). The project combines web and mobile-first development patterns using React Native components that render both on native platforms and web.
+This is a Next.js application with React Native Web integration and AWS infrastructure managed by CDKTF (Terraform CDK). The project uses React Native components that render on web through React Native Web.
 
-## Code Formatting and Linting
+## Guidance
 
-The project uses Biome for formatting, linting, and import organization:
+- We're using **Next.js 15** with App Router (src/app directory structure)
 
-- 2-space indentation
-- Double quotes for JavaScript strings
-- Recommended rules enabled with some performance and complexity exceptions
-- Automatic import organization
-- Run formatting/linting through your editor or Biome CLI
+- Always use TypeScript.
 
-## Architecture
+- React Native components should be used instead of normal HTML elements.
 
-### Frontend Stack
+- But, this project is currently **web-only**. Don't bother implementing (or even creating) code paths for non-web platforms, and don't rely on platform-specific packages like AsyncStorage when there is an established web precedent like `localStorage`. But, DO always use React Native UI components, rather than HTML elements.
 
-- **Next.js 15** with App Router (src/app directory structure)
-- **React Native Web** integration for cross-platform component development
-- **TypeScript** throughout
-- Supports `.web.js/jsx/ts/tsx` file extensions for web-specific implementations
-
-### Styling
-
-- React Native StyleSheet for cross-platform styling. But, do not directly use `StyleSheet.create(...)` -- instead use the `makeStyles` helper to create styles:
+- Use React Native StyleSheet for cross-platform styling. But, do not directly use `StyleSheet.create(...)` -- instead use the `makeStyles` helper to create styles:
 
     ```tsx
     import { makeStyles } from "../utils/styles";
@@ -44,11 +33,6 @@ The project uses Biome for formatting, linting, and import organization:
     }
     ```
 
-### Shared Components
+- Be sure to use the `AppText` and `AppButton` components when building new UI, instead of using the lower-level React Native elements.
 
-- Be sure to use the `AppText` and `AppButton` components when building new UI, instead of using the lower-level react-native elements.
-
-## Key Integration Points
-
-- React Native components should be used instead of normal HTML elements
-- Next.js handles both web bundling and the React Native Web transpilation
+- If you make changes in a session that consist of more than 1-2 files changes, run Biome formatting on the new files after all your changes are complete.
