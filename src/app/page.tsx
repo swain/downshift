@@ -154,7 +154,11 @@ export default function Home() {
               placeholder="Amount"
               placeholderTextColor="#999"
             />
-            <AppText variant="body" color="textSecondary" style={styles.servingLabel}>
+            <AppText
+              variant="body"
+              color="textSecondary"
+              style={styles.servingLabel}
+            >
               {selectedFood.servingSize}
             </AppText>
           </View>
@@ -219,7 +223,11 @@ export default function Home() {
             ))}
 
           {!isSearching && !!searchQuery && searchResults.length === 0 && (
-            <AppText variant="body" color="placeholder" style={styles.centerText}>
+            <AppText
+              variant="body"
+              color="placeholder"
+              style={styles.centerText}
+            >
               No foods found
             </AppText>
           )}
@@ -257,9 +265,12 @@ const styles = makeStyles((theme) => ({
     opacity: 0.6,
   },
   searchTextInput: {
-    fontSize: 16,
+    ...theme.typography.body,
     flex: 1,
     color: theme.colors.text,
+    outlineWidth: 0,
+    borderWidth: 0,
+    caretColor: theme.colors.primary,
   },
   resultsContainer: {
     flex: 1,
