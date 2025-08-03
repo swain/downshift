@@ -63,27 +63,25 @@ export const AuthScreen: React.FC = () => {
         OR
       </AppText>
 
-      <View style={styles.section}>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.keyInput}
-            value={enteredKey}
-            onChangeText={setEnteredKey}
-            placeholder="Enter your existing account key..."
-            placeholderTextColor="#9CA3AF"
-            autoCorrect={false}
-            autoCapitalize="none"
-            spellCheck={false}
-          />
-        </View>
-
-        <AppButton
-          title="Continue"
-          onPress={handleEnterExistingKey}
-          disabled={!enteredKey.trim()}
-          style={styles.button}
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.keyInput}
+          value={enteredKey}
+          onChangeText={setEnteredKey}
+          placeholder="Enter your existing account key..."
+          placeholderTextColor="#9CA3AF"
+          autoCorrect={false}
+          autoCapitalize="none"
+          spellCheck={false}
         />
       </View>
+
+      <AppButton
+        title="Continue"
+        onPress={handleEnterExistingKey}
+        disabled={!enteredKey.trim()}
+        style={styles.button}
+      />
     </View>
   );
 };
