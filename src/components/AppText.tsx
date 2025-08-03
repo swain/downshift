@@ -1,6 +1,6 @@
 import type React from "react";
 import { Text, type TextProps } from "react-native";
-import { type Theme, makeStyles } from "../utils/styles";
+import { type Theme, makeStyles, theme } from "../utils/styles";
 
 export type AppTextProps = TextProps & {
   variant?: keyof Theme["typography"];
@@ -17,7 +17,7 @@ export const AppText: React.FC<AppTextProps> = ({
 }) => {
   return (
     <Text
-      style={[styles[variant], { color }, style]}
+      style={[styles[variant], { color: theme.colors[color] }, style]}
       {...props}
       suppressHighlighting={true}
       allowFontScaling={false}

@@ -1,6 +1,7 @@
 import type React from "react";
-import { Pressable, type StyleProp, Text, type ViewStyle } from "react-native";
+import { Pressable, type StyleProp, type ViewStyle } from "react-native";
 import { makeStyles } from "../utils/styles";
+import { AppText } from "./AppText";
 
 export type AppButtonProps = {
   style?: StyleProp<ViewStyle>;
@@ -53,9 +54,13 @@ export const AppButton: React.FC<AppButtonProps> = ({
       onPress={disabled ? undefined : onPress}
       disabled={disabled}
     >
-      <Text style={[styles.text, disabled && styles.textDisabled]}>
+      <AppText
+        style={[{ fontWeight: 600 }, disabled && styles.textDisabled]}
+        variant="body"
+        color="background"
+      >
         {title}
-      </Text>
+      </AppText>
     </Pressable>
   );
 };

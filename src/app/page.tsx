@@ -13,10 +13,7 @@ interface FoodItem {
   servingSize: string;
 }
 
-type Screen = "search" | "amount";
-
 export default function Home() {
-  const [currentScreen, setCurrentScreen] = useState<Screen>("search");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<FoodItem[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -24,12 +21,15 @@ export default function Home() {
   const [selectedAmount, setSelectedAmount] = useState("1");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const searchInputRef = useRef<TextInput>(null);
+  const amountInputRef = useRef<TextInput>(null);
 
   useEffect(() => {
-    if (currentScreen === "search") {
+    if (!selectedFood) {
       searchInputRef.current?.focus();
+    } else {
+      amountInputRef.current?.focus();
     }
-  }, [currentScreen]);
+  }, [selectedFood]);
 
   const searchFoods = async (query: string) => {
     if (!query.trim()) {
@@ -67,13 +67,15 @@ export default function Home() {
 
   const handleFoodSelect = (food: FoodItem) => {
     setSelectedFood(food);
-    setCurrentScreen("amount");
+    setSearchQuery(food.name);
+    setSearchResults([]);
   };
 
-  const handleBackToSearch = () => {
-    setCurrentScreen("search");
+  const handleFoodDeselect = () => {
     setSelectedFood(null);
     setSelectedAmount("1");
+    setSearchQuery("");
+    setSearchResults([]);
   };
 
   const handleSubmit = async () => {
@@ -97,9 +99,7 @@ export default function Home() {
       });
 
       if (response.ok) {
-        handleBackToSearch();
-        setSearchQuery("");
-        setSearchResults([]);
+        handleFoodDeselect();
       }
     } catch (error) {
       console.error("Failed to track food:", error);
@@ -108,35 +108,56 @@ export default function Home() {
     }
   };
 
-  if (currentScreen === "amount" && selectedFood) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <AppButton
-            title="← Back"
-            onPress={handleBackToSearch}
-            style={styles.backButton}
-          />
-          <AppText variant="title" color="text">
-            How much?
-          </AppText>
-          <AppText variant="body" color="textSecondary">
-            {selectedFood.name}
-          </AppText>
-        </View>
+  return (
+    <View style={styles.container}>
+      <AppText style={styles.header} variant="title" color="text">
+        Downshift
+      </AppText>
 
-        <View style={styles.amountContainer}>
-          <AppText variant="header" color="text">
-            Amount ({selectedFood.servingSize})
-          </AppText>
+      <View style={styles.searchContainer}>
+        <TouchableOpacity
+          style={[
+            styles.searchInput,
+            selectedFood && styles.searchInputSelected,
+          ]}
+          onPress={() => {
+            if (selectedFood) {
+              handleFoodDeselect();
+            }
+            searchInputRef.current?.focus();
+          }}
+          activeOpacity={1}
+        >
           <TextInput
-            style={styles.amountInput}
-            value={selectedAmount}
-            onChangeText={setSelectedAmount}
-            keyboardType="decimal-pad"
-            selectTextOnFocus
+            ref={searchInputRef}
+            style={styles.searchTextInput}
+            placeholder="Search foods..."
+            value={searchQuery}
+            onChangeText={handleSearchChange}
             autoFocus
+            placeholderTextColor="#999"
+            editable={!selectedFood}
           />
+        </TouchableOpacity>
+      </View>
+
+      {selectedFood ? (
+        <View style={styles.amountContainer}>
+          <View style={styles.amountInputContainer}>
+            <TextInput
+              ref={amountInputRef}
+              style={styles.amountInput}
+              value={selectedAmount}
+              onChangeText={setSelectedAmount}
+              keyboardType="decimal-pad"
+              selectTextOnFocus
+              placeholder="Amount"
+              placeholderTextColor="#999"
+            />
+            <AppText variant="body" color="textSecondary" style={styles.servingLabel}>
+              {selectedFood.servingSize}
+            </AppText>
+          </View>
 
           <View style={styles.caloriePreview}>
             <AppText variant="body" color="textSecondary">
@@ -161,69 +182,49 @@ export default function Home() {
               />
             ))}
           </View>
+
+          <AppButton
+            title={isSubmitting ? "Adding..." : "Add to Tracker"}
+            onPress={handleSubmit}
+            disabled={isSubmitting}
+          />
         </View>
-
-        <AppButton
-          title={isSubmitting ? "Adding..." : "Add to Tracker"}
-          onPress={handleSubmit}
-          disabled={isSubmitting}
-        />
-      </View>
-    );
-  }
-
-  return (
-    <View style={styles.container}>
-      <AppText style={styles.header} variant="title" color="text">
-        Downshift
-      </AppText>
-
-      <View style={styles.searchContainer}>
-        <TextInput
-          ref={searchInputRef}
-          style={styles.searchInput}
-          placeholder="Search foods..."
-          value={searchQuery}
-          onChangeText={handleSearchChange}
-          autoFocus
-          placeholderTextColor="#999"
-        />
-      </View>
-
-      <View style={styles.resultsContainer}>
-        {isSearching && (
-          <AppText
-            variant="body"
-            color="textSecondary"
-            style={styles.centerText}
-          >
-            Searching...
-          </AppText>
-        )}
-
-        {!isSearching &&
-          searchResults.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.resultItem}
-              onPress={() => handleFoodSelect(item)}
-              activeOpacity={0.7}
+      ) : (
+        <View style={styles.resultsContainer}>
+          {isSearching && (
+            <AppText
+              variant="body"
+              color="textSecondary"
+              style={styles.centerText}
             >
-              <AppText variant="header" color="text">
-                {item.name}
-              </AppText>
-              <AppText variant="details" color="textSecondary">
-                {item.servingSize}
-              </AppText>
-            </TouchableOpacity>
-          ))}
+              Searching...
+            </AppText>
+          )}
 
-        {!isSearching && !!searchQuery && searchResults.length === 0 && (
-          <AppText variant="body" color="placeholder" style={styles.centerText}>
-            No foods found
-          </AppText>
-        )}
-      </View>
+          {!isSearching &&
+            searchResults.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                style={styles.resultItem}
+                onPress={() => handleFoodSelect(item)}
+                activeOpacity={0.7}
+              >
+                <AppText variant="header" color="text">
+                  {item.name}
+                </AppText>
+                <AppText variant="details" color="textSecondary">
+                  {item.servingSize}
+                </AppText>
+              </TouchableOpacity>
+            ))}
+
+          {!isSearching && !!searchQuery && searchResults.length === 0 && (
+            <AppText variant="body" color="placeholder" style={styles.centerText}>
+              No foods found
+            </AppText>
+          )}
+        </View>
+      )}
     </View>
   );
 }
@@ -239,10 +240,6 @@ const styles = makeStyles((theme) => ({
     alignSelf: "center",
     marginBottom: theme.spacing(7.5),
   },
-  backButton: {
-    marginBottom: theme.spacing(2.5),
-    alignSelf: "flex-start",
-  },
   searchContainer: {
     marginBottom: theme.spacing(5),
   },
@@ -251,10 +248,18 @@ const styles = makeStyles((theme) => ({
     borderRadius: 12,
     paddingHorizontal: theme.spacing(4),
     paddingVertical: theme.spacing(4),
-    fontSize: 16,
     borderWidth: 2,
     borderColor: "transparent",
     minHeight: 50,
+  },
+  searchInputSelected: {
+    backgroundColor: theme.colors.surface,
+    opacity: 0.6,
+  },
+  searchTextInput: {
+    fontSize: 16,
+    flex: 1,
+    color: theme.colors.text,
   },
   resultsContainer: {
     flex: 1,
@@ -275,18 +280,27 @@ const styles = makeStyles((theme) => ({
   },
   amountContainer: {
     flex: 1,
-    marginBottom: theme.spacing(7.5),
   },
-  amountInput: {
+  amountInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: theme.colors.surface,
     borderRadius: 12,
     paddingHorizontal: theme.spacing(4),
     paddingVertical: theme.spacing(4),
+    marginBottom: theme.spacing(5),
+    minHeight: 60,
+  },
+  amountInput: {
     fontSize: 24,
     fontWeight: "600",
     textAlign: "center",
-    marginBottom: theme.spacing(5),
-    minHeight: 60,
+    flex: 1,
+    color: theme.colors.text,
+  },
+  servingLabel: {
+    marginLeft: theme.spacing(2),
+    fontSize: 14,
   },
   caloriePreview: {
     alignItems: "center",
