@@ -49,5 +49,5 @@ export type Theme = typeof theme;
 export const makeStyles = <
   T extends StyleSheet.NamedStyles<T> | StyleSheet.NamedStyles<any>,
 >(
-  create: (theme: Theme) => T & StyleSheet.NamedStyles<any>,
+  create: (theme: Theme) => T,
 ) => create(theme);

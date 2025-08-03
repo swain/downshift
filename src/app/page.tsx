@@ -111,139 +111,141 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <AppText style={styles.header} variant="title" color="text">
-          Downshift
-        </AppText>
-        <TouchableOpacity
-          onPress={CurrentAccount.clear}
-          style={styles.logoutButton}
-        >
-          <AppText variant="details" color="textSecondary">
-            Logout
+      <View style={styles.content}>
+        <View style={styles.headerContainer}>
+          <AppText style={styles.header} variant="title" color="text">
+            Downshift
           </AppText>
-        </TouchableOpacity>
-      </View>
+        </View>
 
-      <View style={styles.searchContainer}>
-        <TouchableOpacity
-          style={[
-            styles.searchInput,
-            selectedFood && styles.searchInputSelected,
-          ]}
-          onPress={() => {
-            if (selectedFood) {
-              handleFoodDeselect();
-            }
-            searchInputRef.current?.focus();
-          }}
-          activeOpacity={1}
-        >
-          <TextInput
-            ref={searchInputRef}
-            style={styles.searchTextInput}
-            placeholder="Search foods..."
-            value={searchQuery}
-            onChangeText={handleSearchChange}
-            autoFocus
-            placeholderTextColor="#999"
-            editable={!selectedFood}
-          />
-        </TouchableOpacity>
-      </View>
-
-      {selectedFood ? (
-        <View style={styles.amountContainer}>
-          <View style={styles.amountInputContainer}>
+        <View style={styles.searchContainer}>
+          <TouchableOpacity
+            style={[
+              styles.searchInput,
+              selectedFood && styles.searchInputSelected,
+            ]}
+            onPress={() => {
+              if (selectedFood) {
+                handleFoodDeselect();
+              }
+              searchInputRef.current?.focus();
+            }}
+            activeOpacity={1}
+          >
             <TextInput
-              ref={amountInputRef}
-              style={styles.amountInput}
-              value={selectedAmount}
-              onChangeText={setSelectedAmount}
-              keyboardType="decimal-pad"
-              selectTextOnFocus
-              placeholder="Amount"
+              ref={searchInputRef}
+              style={styles.searchTextInput}
+              placeholder="Search foods..."
+              value={searchQuery}
+              onChangeText={handleSearchChange}
+              autoFocus
               placeholderTextColor="#999"
+              editable={!selectedFood}
             />
-            <AppText
-              variant="body"
-              color="textSecondary"
-              style={styles.servingLabel}
-            >
-              {selectedFood.servingSize}
-            </AppText>
-          </View>
+          </TouchableOpacity>
+        </View>
 
-          <View style={styles.caloriePreview}>
-            <AppText variant="body" color="textSecondary">
-              {Math.round(
-                selectedFood.calories *
-                  Number.parseFloat(selectedAmount || "0"),
-              )}{" "}
-              calories
-            </AppText>
-          </View>
-
-          <View style={styles.quickAmounts}>
-            {["0.5", "1", "1.5", "2"].map((amount) => (
-              <AppButton
-                key={amount}
-                title={amount}
-                onPress={() => setSelectedAmount(amount)}
-                style={[
-                  styles.quickAmountButton,
-                  selectedAmount === amount && styles.quickAmountButtonActive,
-                ]}
+        {selectedFood ? (
+          <View style={styles.amountContainer}>
+            <View style={styles.amountInputContainer}>
+              <TextInput
+                ref={amountInputRef}
+                style={styles.amountInput}
+                value={selectedAmount}
+                onChangeText={setSelectedAmount}
+                keyboardType="decimal-pad"
+                selectTextOnFocus
+                placeholder="Amount"
+                placeholderTextColor="#999"
               />
-            ))}
-          </View>
-
-          <AppButton
-            title={isSubmitting ? "Adding..." : "Add to Tracker"}
-            onPress={handleSubmit}
-            disabled={isSubmitting}
-          />
-        </View>
-      ) : (
-        <View style={styles.resultsContainer}>
-          {isSearching && (
-            <AppText
-              variant="body"
-              color="textSecondary"
-              style={styles.centerText}
-            >
-              Searching...
-            </AppText>
-          )}
-
-          {!isSearching &&
-            searchResults.map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                style={styles.resultItem}
-                onPress={() => handleFoodSelect(item)}
-                activeOpacity={0.7}
+              <AppText
+                variant="body"
+                color="textSecondary"
+                style={styles.servingLabel}
               >
-                <AppText variant="header" color="text">
-                  {item.name}
-                </AppText>
-                <AppText variant="details" color="textSecondary">
-                  {item.servingSize}
-                </AppText>
-              </TouchableOpacity>
-            ))}
+                {selectedFood.servingSize}
+              </AppText>
+            </View>
 
-          {!isSearching && !!searchQuery && searchResults.length === 0 && (
-            <AppText
-              variant="body"
-              color="placeholder"
-              style={styles.centerText}
-            >
-              No foods found
-            </AppText>
-          )}
-        </View>
-      )}
+            <View style={styles.caloriePreview}>
+              <AppText variant="body" color="textSecondary">
+                {Math.round(
+                  selectedFood.calories *
+                    Number.parseFloat(selectedAmount || "0"),
+                )}{" "}
+                calories
+              </AppText>
+            </View>
+
+            <View style={styles.quickAmounts}>
+              {["0.5", "1", "1.5", "2"].map((amount) => (
+                <AppButton
+                  key={amount}
+                  title={amount}
+                  onPress={() => setSelectedAmount(amount)}
+                  style={[
+                    styles.quickAmountButton,
+                    selectedAmount === amount && styles.quickAmountButtonActive,
+                  ]}
+                />
+              ))}
+            </View>
+
+            <AppButton
+              title={isSubmitting ? "Adding..." : "Add to Tracker"}
+              onPress={handleSubmit}
+              disabled={isSubmitting}
+            />
+          </View>
+        ) : (
+          <View style={styles.resultsContainer}>
+            {isSearching && (
+              <AppText
+                variant="body"
+                color="textSecondary"
+                style={styles.centerText}
+              >
+                Searching...
+              </AppText>
+            )}
+
+            {!isSearching &&
+              searchResults.map((item) => (
+                <TouchableOpacity
+                  key={item.id}
+                  style={styles.resultItem}
+                  onPress={() => handleFoodSelect(item)}
+                  activeOpacity={0.7}
+                >
+                  <AppText variant="header" color="text">
+                    {item.name}
+                  </AppText>
+                  <AppText variant="details" color="textSecondary">
+                    {item.servingSize}
+                  </AppText>
+                </TouchableOpacity>
+              ))}
+
+            {!isSearching && !!searchQuery && searchResults.length === 0 && (
+              <AppText
+                variant="body"
+                color="placeholder"
+                style={styles.centerText}
+              >
+                No foods found
+              </AppText>
+            )}
+          </View>
+        )}
+      </View>
+      <TouchableOpacity
+        style={{ alignSelf: "center" }}
+        onPress={CurrentAccount.clear}
+      >
+        <AppText variant="details" color="textSecondary">
+          Logout
+        </AppText>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -252,8 +254,10 @@ const styles = makeStyles((theme) => ({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
-    paddingHorizontal: theme.spacing(5),
-    paddingTop: theme.spacing(15),
+  },
+  content: {
+    flex: 1,
+    padding: theme.spacing(5),
   },
   headerContainer: {
     flexDirection: "row",
@@ -265,12 +269,8 @@ const styles = makeStyles((theme) => ({
     flex: 1,
     textAlign: "center",
   },
-  logoutButton: {
-    position: "absolute",
-    right: 0,
-    padding: theme.spacing(2),
-  },
   searchContainer: {
+    flex: 1,
     marginBottom: theme.spacing(5),
   },
   searchInput: {
@@ -279,8 +279,8 @@ const styles = makeStyles((theme) => ({
     paddingHorizontal: theme.spacing(4),
     paddingVertical: theme.spacing(4),
     borderWidth: 2,
-    borderColor: "transparent",
-    minHeight: 50,
+    borderColor: theme.colors.border,
+    minHeight: 60,
   },
   searchInputSelected: {
     backgroundColor: theme.colors.surface,
@@ -322,6 +322,8 @@ const styles = makeStyles((theme) => ({
     paddingHorizontal: theme.spacing(4),
     paddingVertical: theme.spacing(4),
     marginBottom: theme.spacing(5),
+    borderWidth: 2,
+    borderColor: theme.colors.border,
     minHeight: 60,
   },
   amountInput: {
@@ -343,10 +345,10 @@ const styles = makeStyles((theme) => ({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: theme.spacing(5),
+    gap: theme.spacing(2),
   },
   quickAmountButton: {
     flex: 1,
-    marginHorizontal: theme.spacing(1),
   },
   quickAmountButtonActive: {
     backgroundColor: theme.colors.primary,
