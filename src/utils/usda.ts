@@ -19,14 +19,14 @@ export type SortBy =
 export type SortOrder = "asc" | "desc";
 
 // Base food item interface
-export interface BaseFoodItem {
+interface BaseFoodItem {
   fdcId: number;
   dataType: string;
   description: string;
 }
 
 // Abridged food nutrient
-export interface AbridgedFoodNutrient {
+interface AbridgedFoodNutrient {
   number?: number;
   name?: string;
   amount?: number;
@@ -36,7 +36,7 @@ export interface AbridgedFoodNutrient {
 }
 
 // Abridged food item
-export interface AbridgedFoodItem extends BaseFoodItem {
+interface AbridgedFoodItem extends BaseFoodItem {
   foodNutrients?: AbridgedFoodNutrient[];
   publicationDate?: string;
   brandOwner?: string; // only applies to Branded Foods
@@ -46,7 +46,7 @@ export interface AbridgedFoodItem extends BaseFoodItem {
 }
 
 // Nutrient
-export interface Nutrient {
+interface Nutrient {
   id?: number;
   number?: string;
   name?: string;
@@ -55,14 +55,14 @@ export interface Nutrient {
 }
 
 // Food nutrient source
-export interface FoodNutrientSource {
+interface FoodNutrientSource {
   id?: number;
   code?: string;
   description?: string;
 }
 
 // Food nutrient derivation
-export interface FoodNutrientDerivation {
+interface FoodNutrientDerivation {
   id?: number;
   code?: string;
   description?: string;
@@ -70,7 +70,7 @@ export interface FoodNutrientDerivation {
 }
 
 // Nutrient acquisition details
-export interface NutrientAcquisitionDetails {
+interface NutrientAcquisitionDetails {
   sampleUnitId?: number;
   purchaseDate?: string;
   storeCity?: string;
@@ -78,7 +78,7 @@ export interface NutrientAcquisitionDetails {
 }
 
 // Nutrient analysis details
-export interface NutrientAnalysisDetails {
+interface NutrientAnalysisDetails {
   subSampleId?: number;
   amount?: number;
   nutrientId?: number;
@@ -90,7 +90,7 @@ export interface NutrientAnalysisDetails {
 }
 
 // Food nutrient
-export interface FoodNutrient {
+interface FoodNutrient {
   id?: number;
   amount?: number;
   dataPoints?: number;
@@ -104,13 +104,13 @@ export interface FoodNutrient {
 }
 
 // Nutrient conversion factors
-export interface NutrientConversionFactors {
+interface NutrientConversionFactors {
   type?: string;
   value?: number;
 }
 
 // Food update log
-export interface FoodUpdateLog {
+interface FoodUpdateLog {
   fdcId?: number;
   availableDate?: string;
   brandOwner?: string;
@@ -131,14 +131,14 @@ export interface FoodUpdateLog {
 }
 
 // Food attribute type
-export interface FoodAttributeType {
+interface FoodAttributeType {
   id?: number;
   name?: string;
   description?: string;
 }
 
 // Food attribute
-export interface FoodAttribute {
+interface FoodAttribute {
   id?: number;
   sequenceNumber?: number;
   value?: string;
@@ -146,11 +146,11 @@ export interface FoodAttribute {
 }
 
 // Label nutrients
-export interface LabelNutrientValue {
+interface LabelNutrientValue {
   value?: number;
 }
 
-export interface LabelNutrients {
+interface LabelNutrients {
   fat?: LabelNutrientValue;
   saturatedFat?: LabelNutrientValue;
   transFat?: LabelNutrientValue;
@@ -167,7 +167,7 @@ export interface LabelNutrients {
 }
 
 // Branded food item
-export interface BrandedFoodItem extends BaseFoodItem {
+interface BrandedFoodItem extends BaseFoodItem {
   availableDate?: string;
   brandOwner?: string;
   dataSource?: string;
@@ -186,14 +186,14 @@ export interface BrandedFoodItem extends BaseFoodItem {
 }
 
 // Food category
-export interface FoodCategory {
+interface FoodCategory {
   id?: number;
   code?: string;
   description?: string;
 }
 
 // Food component
-export interface FoodComponent {
+interface FoodComponent {
   id?: number;
   name?: string;
   dataPoints?: number;
@@ -204,14 +204,14 @@ export interface FoodComponent {
 }
 
 // Measure unit
-export interface MeasureUnit {
+interface MeasureUnit {
   id?: number;
   abbreviation?: string;
   name?: string;
 }
 
 // Food portion
-export interface FoodPortion {
+interface FoodPortion {
   id?: number;
   amount?: number;
   dataPoints?: number;
@@ -224,21 +224,21 @@ export interface FoodPortion {
 }
 
 // Sample food item
-export interface SampleFoodItem extends BaseFoodItem {
+interface SampleFoodItem extends BaseFoodItem {
   foodClass?: string;
   publicationDate?: string;
   foodAttributes?: FoodCategory[];
 }
 
 // Input food foundation
-export interface InputFoodFoundation {
+interface InputFoodFoundation {
   id?: number;
   foodDescription?: string;
   inputFood?: SampleFoodItem;
 }
 
 // Foundation food item
-export interface FoundationFoodItem extends BaseFoodItem {
+interface FoundationFoodItem extends BaseFoodItem {
   foodClass?: string;
   footNote?: string;
   isHistoricalReference?: boolean;
@@ -254,7 +254,7 @@ export interface FoundationFoodItem extends BaseFoodItem {
 }
 
 // SR Legacy food item
-export interface SRLegacyFoodItem extends BaseFoodItem {
+interface SRLegacyFoodItem extends BaseFoodItem {
   foodClass?: string;
   isHistoricalReference?: boolean;
   ndbNumber?: string;
@@ -266,14 +266,14 @@ export interface SRLegacyFoodItem extends BaseFoodItem {
 }
 
 // Retention factor
-export interface RetentionFactor {
+interface RetentionFactor {
   id?: number;
   code?: number;
   description?: string;
 }
 
 // Input food survey
-export interface InputFoodSurvey {
+interface InputFoodSurvey {
   id?: number;
   amount?: number;
   foodDescription?: string;
@@ -290,13 +290,13 @@ export interface InputFoodSurvey {
 }
 
 // WWEIA food category
-export interface WweiaFoodCategory {
+interface WweiaFoodCategory {
   wweiaFoodCategoryCode?: number;
   wweiaFoodCategoryDescription?: string;
 }
 
 // Survey food item
-export interface SurveyFoodItem extends BaseFoodItem {
+interface SurveyFoodItem extends BaseFoodItem {
   datatype?: string;
   endDate?: string;
   foodClass?: string;
@@ -317,22 +317,7 @@ export type FoodItem =
   | SRLegacyFoodItem
   | SurveyFoodItem;
 
-// Request body types
-export interface FoodsCriteria {
-  fdcIds: number[];
-  format?: Format;
-  nutrients?: number[];
-}
-
-export interface FoodListCriteria {
-  dataType?: DataType[];
-  pageSize?: number;
-  pageNumber?: number;
-  sortBy?: SortBy;
-  sortOrder?: SortOrder;
-}
-
-export interface FoodSearchCriteria {
+interface FoodSearchCriteria {
   query?: string;
   dataType?: DataType[];
   pageSize?: number;
@@ -343,7 +328,7 @@ export interface FoodSearchCriteria {
 }
 
 // Search result food
-export interface SearchResultFood extends BaseFoodItem {
+interface SearchResultFood extends BaseFoodItem {
   foodCode?: string;
   foodNutrients?: AbridgedFoodNutrient[];
   publicationDate?: string;
@@ -358,7 +343,7 @@ export interface SearchResultFood extends BaseFoodItem {
 }
 
 // Search result
-export interface SearchResult {
+interface SearchResult {
   foodSearchCriteria?: FoodSearchCriteria;
   totalHits?: number;
   currentPage?: number;
@@ -367,27 +352,19 @@ export interface SearchResult {
 }
 
 // API parameter types
-export interface GetFoodParams {
+interface GetFoodParams {
   fdcId: string;
   format?: Format;
   nutrients?: number[];
 }
 
-export interface GetFoodsParams {
+interface GetFoodsParams {
   fdcIds: string[];
   format?: Format;
   nutrients?: number[];
 }
 
-export interface GetFoodsListParams {
-  dataType?: DataType[];
-  pageSize?: number;
-  pageNumber?: number;
-  sortBy?: SortBy;
-  sortOrder?: SortOrder;
-}
-
-export interface GetFoodsSearchParams {
+interface GetFoodsSearchParams {
   query: string;
   dataType?: DataType[];
   pageSize?: number;
@@ -406,24 +383,8 @@ export type USDAEndpoints = {
     Request: GetFoodsParams;
     Response: FoodItem[];
   };
-  "POST /foods": {
-    Request: FoodsCriteria;
-    Response: FoodItem[];
-  };
-  "GET /foods/list": {
-    Request: GetFoodsListParams;
-    Response: AbridgedFoodItem[];
-  };
-  "POST /foods/list": {
-    Request: FoodListCriteria;
-    Response: AbridgedFoodItem[];
-  };
   "GET /foods/search": {
     Request: GetFoodsSearchParams;
-    Response: SearchResult[];
-  };
-  "POST /foods/search": {
-    Request: FoodSearchCriteria;
     Response: SearchResult[];
   };
 };
