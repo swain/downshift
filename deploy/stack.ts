@@ -1,3 +1,4 @@
+import { DataAwsSsmParameter } from "@cdktf/provider-aws/lib/data-aws-ssm-parameter";
 import { DynamodbTable } from "@cdktf/provider-aws/lib/dynamodb-table";
 import { AwsProvider } from "@cdktf/provider-aws/lib/provider";
 import { TlsProvider } from "@cdktf/provider-tls/lib/provider";
@@ -34,7 +35,15 @@ export class InfraStack extends TerraformStack {
       ttl: { enabled: true, attributeName: "ttl" },
     });
 
+    const apiKeyParameter = new DataAwsSsmParameter(this, "usda-api-key", {
+      name: "usda-api-key",
+    });
+
     vercelAuth(this, [
+      {
+        actions: ["ssm:GetParameter"],
+        resources: [apiKeyParameter.arn],
+      },
       {
         actions: ["dynamodb:PutItem"],
         resources: [table.arn],

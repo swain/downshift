@@ -42,6 +42,7 @@
     "@types/node": "^22.15.23",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "axios": "^1.11.0",
     "bunyan": "^1.8.15",
     "cdktf": "0.20.11",
     "constructs": "^10.4.2",
