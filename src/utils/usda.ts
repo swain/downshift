@@ -385,7 +385,7 @@ export type USDAEndpoints = {
   };
   "GET /foods/search": {
     Request: GetFoodsSearchParams;
-    Response: SearchResult[];
+    Response: SearchResult;
   };
 };
 
@@ -396,7 +396,9 @@ const client = axios.create({
 });
 
 client.interceptors.request.use(async (req) => {
-  const apiKey = await ssm.get("usda-api-key");
+  const apiKey = process.env.AWS_REGION
+    ? await ssm.get("usda-api-key")
+    : process.env.USDA_API_KEY;
   if (!apiKey) {
     throw new Error("could not fetch api key from SSM");
   }

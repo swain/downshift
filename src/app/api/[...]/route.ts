@@ -1,16 +1,15 @@
-import cookie from "cookie";
+import { parse as parseCookie } from "cookie";
 import { AutoRouter } from "itty-router";
 import { APIContract } from "../../../api/contract";
 import { router } from "../../../api/routes";
-import { isValidAccountKey } from "../../../utils/client-auth";
 
 const _router = AutoRouter();
 
 for (const [route, handler] of Object.entries(router.routes)) {
   const [method, path] = route.split(" ");
 
-  _router[path.toLowerCase() as "get"](path, async (request) => {
-    const account = cookie.parse(
+  _router[method.toLowerCase() as "get"](`/api${path}`, async (request) => {
+    const account = parseCookie(
       request.headers.get("Cookie") || "",
     ).account_key;
     if (!account) {
@@ -19,12 +18,7 @@ for (const [route, handler] of Object.entries(router.routes)) {
         { status: 401 },
       );
     }
-    if (!isValidAccountKey(account)) {
-      return Response.json(
-        { error: "Invalid account_key cookie value found" },
-        { status: 400 },
-      );
-    }
+    console.log("found account", account);
 
     // @ts-expect-error
     const contract = APIContract[route];

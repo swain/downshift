@@ -1,7 +1,10 @@
 "use client";
 
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { TextInput, TouchableOpacity, View } from "react-native";
+import { useDebounce } from "use-debounce";
+import { client } from "../api/util-client";
 import { AppButton } from "../components/AppButton";
 import { AppText } from "../components/AppText";
 import { CurrentAccount } from "../utils/client-auth";
@@ -12,17 +15,76 @@ interface FoodItem {
   name: string;
   calories: number;
   servingSize: string;
+  brandOwner?: string;
+  dataType?: string;
 }
+
+const searchFoods = async (query: string): Promise<FoodItem[]> => {
+  if (!query || query.trim().length < 2) {
+    return [];
+  }
+
+  const response = await fetch(
+    `/api/search-foods?query=${encodeURIComponent(query.trim())}&pageSize=10`,
+  );
+
+  if (!response.ok) {
+    throw new Error("Search failed");
+  }
+
+  const data = await response.json();
+  return data.foods || [];
+};
+
+const trackFood = async (foodData: {
+  foodId: string;
+  foodName: string;
+  amount: number;
+  calories: number;
+  timestamp: string;
+}) => {
+  const response = await fetch("/api/track-food", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(foodData),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to track food");
+  }
+
+  return response.json();
+};
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<FoodItem[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
   const [selectedAmount, setSelectedAmount] = useState("1");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const searchInputRef = useRef<TextInput>(null);
   const amountInputRef = useRef<TextInput>(null);
+
+  // Debounce search query
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
+
+  // Search foods query
+  const { data: searchResults = [], isLoading: isSearching } = useQuery({
+    queryKey: ["searchFoods", debouncedSearchQuery],
+    queryFn: () => searchFoods(debouncedSearchQuery),
+    enabled: !!debouncedSearchQuery && debouncedSearchQuery.trim().length >= 2,
+  });
+
+  // Track food mutation
+  const trackFoodMutation = useMutation({
+    mutationFn: trackFood,
+    onSuccess: () => {
+      handleFoodDeselect();
+    },
+    onError: (error) => {
+      console.error("Failed to track food:", error);
+    },
+  });
 
   useEffect(() => {
     if (!selectedFood) {
@@ -32,81 +94,31 @@ export default function Home() {
     }
   }, [selectedFood]);
 
-  const searchFoods = async (query: string) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      return;
-    }
-
-    setIsSearching(true);
-
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
-    const mockResults: FoodItem[] = [
-      { id: "1", name: "Apple", calories: 95, servingSize: "1 medium" },
-      { id: "2", name: "Banana", calories: 105, servingSize: "1 medium" },
-      { id: "3", name: "Orange", calories: 85, servingSize: "1 medium" },
-      { id: "4", name: "Chicken Breast", calories: 165, servingSize: "100g" },
-      {
-        id: "5",
-        name: "White Rice",
-        calories: 205,
-        servingSize: "1 cup cooked",
-      },
-      { id: "6", name: "Broccoli", calories: 25, servingSize: "1 cup" },
-      { id: "7", name: "Eggs", calories: 70, servingSize: "1 large" },
-    ].filter((item) => item.name.toLowerCase().includes(query.toLowerCase()));
-
-    setSearchResults(mockResults);
-    setIsSearching(false);
-  };
-
   const handleSearchChange = (text: string) => {
     setSearchQuery(text);
-    searchFoods(text);
   };
 
   const handleFoodSelect = (food: FoodItem) => {
     setSelectedFood(food);
     setSearchQuery(food.name);
-    setSearchResults([]);
   };
 
   const handleFoodDeselect = () => {
     setSelectedFood(null);
     setSelectedAmount("1");
     setSearchQuery("");
-    setSearchResults([]);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!selectedFood) return;
 
-    setIsSubmitting(true);
-
-    try {
-      const response = await fetch("/api/track-food", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          foodId: selectedFood.id,
-          foodName: selectedFood.name,
-          amount: Number.parseFloat(selectedAmount),
-          calories: selectedFood.calories * Number.parseFloat(selectedAmount),
-          timestamp: new Date().toISOString(),
-        }),
-      });
-
-      if (response.ok) {
-        handleFoodDeselect();
-      }
-    } catch (error) {
-      console.error("Failed to track food:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
+    trackFoodMutation.mutate({
+      foodId: selectedFood.id,
+      foodName: selectedFood.name,
+      amount: Number.parseFloat(selectedAmount),
+      calories: selectedFood.calories * Number.parseFloat(selectedAmount),
+      timestamp: new Date().toISOString(),
+    });
   };
 
   return (
@@ -192,9 +204,11 @@ export default function Home() {
             </View>
 
             <AppButton
-              title={isSubmitting ? "Adding..." : "Add to Tracker"}
+              title={
+                trackFoodMutation.isPending ? "Adding..." : "Add to Tracker"
+              }
               onPress={handleSubmit}
-              disabled={isSubmitting}
+              disabled={trackFoodMutation.isPending}
             />
           </View>
         ) : (
@@ -246,6 +260,15 @@ export default function Home() {
           Logout
         </AppText>
       </TouchableOpacity>
+      <AppButton
+        title="Test route"
+        onPress={async () => {
+          await client
+            .request("GET /search-foods", { query: "chicken" })
+            .then((res) => res.data)
+            .then(console.log);
+        }}
+      />
     </View>
   );
 }
