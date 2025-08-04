@@ -335,6 +335,7 @@ const styles = makeStyles((theme) => ({
     textAlign: "center",
     flex: 1,
     color: theme.colors.text,
+    outlineWidth: 0,
   },
   servingLabel: {
     marginLeft: theme.spacing(2),

@@ -127,6 +127,7 @@ const styles = makeStyles((theme) => ({
     borderWidth: 2,
     borderColor: theme.colors.border,
     minHeight: 60,
+    outlineWidth: 0,
   },
   saveMessage: {
     backgroundColor: theme.colors.surface,
