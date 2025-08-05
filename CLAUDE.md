@@ -41,86 +41,83 @@ This is a Next.js application with React Native Web integration and AWS infrastr
 
 ## API Development
 
-This project uses a custom home-rolled API system with type-safe contracts controlled by Zod schemas. Here's how to work with the API:
+This project uses **tRPC** for type-safe API development. tRPC provides end-to-end type safety from server to client without code generation.
 
-### API Contract System
+### tRPC Setup
 
-All API endpoints are defined in a centralized contract located at `src/api/contract.ts`. Each endpoint specifies both request and response schemas using Zod:
-
-```tsx
-export const APIContract = {
-  "GET /search-foods": {
-    request: z.object({
-      query: z.string().optional(),
-      limit: z.number().optional(),
-    }),
-    response: z.object({
-      foods: z.array(z.object({
-        id: z.string(),
-        name: z.string(),
-      })),
-    }),
-  },
-} satisfies Record<string, { request: z.ZodType; response: z.ZodType }>;
-```
+The tRPC router is defined in `src/api/routes.ts` with procedures using the tRPC instance. Authentication is handled automatically via the `account_key` cookie.
 
 ### Adding New API Endpoints
 
-1. **Define the contract** in `src/api/contract.ts`:
-   - Use the format `"METHOD /path"` as the key
-   - Specify both `request` and `response` Zod schemas
-   - Supports path parameters using `:param` syntax (e.g., `"GET /items/:id"`)
-
-2. **Implement the handler** in `src/api/routes.ts`:
-
-   ```tsx
-   export const router = new Router()
-     .handle("GET /search-foods", async (ctx) => {
-       // ctx.account: string (from cookie authentication)
-       // ctx.params: extracted path parameters 
-       // ctx.data: validated request data
-       // ctx.request: original Request object
-       
-       return {
-         status: 200,
-         data: {
-           // Response data matching the contract schema
-         },
-       };
-     });
-   ```
-
-### Client-Side API Usage
-
-Use the pre-configured client from `src/api/util-client.ts`:
+Add procedures to the router in `src/api/routes.ts`:
 
 ```tsx
-import { client } from "../api/util-client";
+export const router = t.router({
+  // Query procedure (for fetching data)
+  searchFoods: t.procedure
+    .input(z.object({
+      query: z.string(),
+    }))
+    .query(async ({ input, ctx }) => {
+      // ctx.account available for authenticated requests
+      // Implementation here
+      return { foods: [] };
+    }),
 
-// Make API calls with full type safety
-const response = await client.request("GET /search-foods", {
-  query: "apple",
-  limit: 10,
+  // Mutation procedure (for modifying data)
+  createFood: t.procedure
+    .input(z.object({
+      name: z.string(),
+      calories: z.number(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      // Implementation here
+      return { id: "new-id", ...input };
+    }),
 });
+```
 
-// response.data is fully typed based on the contract
+### Client-Side Usage
+
+Use the tRPC client from `src/utils/trpc.ts`:
+
+```tsx
+import { trpc } from "../utils/trpc";
+
+export const MyComponent = () => {
+  // Query data with React Query integration
+  const { data, isLoading } = trpc.searchFoods.useQuery({
+    query: "apple",
+  });
+
+  // Mutations
+  const createFood = trpc.createFood.useMutation({
+    onSuccess: () => {
+      // Handle success
+    },
+  });
+
+  const handleCreate = () => {
+    createFood.mutate({
+      name: "Banana",
+      calories: 105,
+    });
+  };
+
+  return (
+    // Component JSX
+  );
+};
 ```
 
 ### Key Features
 
-- **Type Safety**: Both request and response are fully typed based on the contract
-- **Path Parameters**: Automatically extracted from URLs with `:param` syntax
-- **Authentication**: All routes require `account_key` cookie for authentication
-- **Validation**: Request/response data is validated against Zod schemas
-- **Error Handling**: Comprehensive error responses for validation failures and server errors
+- **End-to-End Type Safety**: Full TypeScript inference from server to client
+- **React Query Integration**: Built-in caching, optimistic updates, and background refetching via `@trpc/react-query`
+- **Authentication**: All procedures automatically have access to authenticated user's account via `ctx.account`
+- **Input Validation**: Zod schemas validate all inputs automatically
+- **Superjson**: Handles serialization of complex types like Date objects
 
 ### Authentication
 
-All API endpoints automatically require authentication via the `account_key` cookie. The auth validation happens in the central route handler at `src/app/api/[...]/route.ts`.
-
-### Router Implementation Details
-
-- Uses `itty-router` under the hood for the actual routing
-- Central Next.js catch-all route handler at `src/app/api/[...]/route.ts`
-- Custom `Router` class in `src/api/util-server.ts` provides type-safe route registration
-- Supports GET, POST, PUT, PATCH, DELETE methods
+Authentication is handled in the tRPC context creation at `src/app/api/trpc/[trpc]/route.ts`. The `account_key` cookie is automatically parsed and available as `ctx.account` in all procedures. If no valid account cookie is found, requests will throw an error.
