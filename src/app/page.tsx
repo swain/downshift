@@ -1,14 +1,14 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { TextInput, TouchableOpacity, View } from "react-native";
 import { useDebounce } from "use-debounce";
-import { client } from "../api/util-client";
 import { AppButton } from "../components/AppButton";
 import { AppText } from "../components/AppText";
 import { CurrentAccount } from "../utils/client-auth";
 import { makeStyles } from "../utils/styles";
+import { trpc } from "../utils/trpc";
 
 interface FoodItem {
   id: string;
@@ -18,23 +18,6 @@ interface FoodItem {
   brandOwner?: string;
   dataType?: string;
 }
-
-const searchFoods = async (query: string): Promise<FoodItem[]> => {
-  if (!query || query.trim().length < 2) {
-    return [];
-  }
-
-  const response = await fetch(
-    `/api/search-foods?query=${encodeURIComponent(query.trim())}&pageSize=10`,
-  );
-
-  if (!response.ok) {
-    throw new Error("Search failed");
-  }
-
-  const data = await response.json();
-  return data.foods || [];
-};
 
 const trackFood = async (foodData: {
   foodId: string;
@@ -69,11 +52,14 @@ export default function Home() {
   const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
 
   // Search foods query
-  const { data: searchResults = [], isLoading: isSearching } = useQuery({
-    queryKey: ["searchFoods", debouncedSearchQuery],
-    queryFn: () => searchFoods(debouncedSearchQuery),
-    enabled: !!debouncedSearchQuery && debouncedSearchQuery.trim().length >= 2,
-  });
+  const { data: searchResults = [], isLoading: isSearching } =
+    trpc.searchFoods.useQuery(
+      { query: debouncedSearchQuery },
+      {
+        enabled:
+          !!debouncedSearchQuery && debouncedSearchQuery.trim().length >= 2,
+      },
+    );
 
   // Track food mutation
   const trackFoodMutation = useMutation({
@@ -224,7 +210,7 @@ export default function Home() {
             )}
 
             {!isSearching &&
-              searchResults.map((item) => (
+              searchResults?.map((item) => (
                 <TouchableOpacity
                   key={item.id}
                   style={styles.resultItem}
@@ -240,15 +226,17 @@ export default function Home() {
                 </TouchableOpacity>
               ))}
 
-            {!isSearching && !!searchQuery && searchResults.length === 0 && (
-              <AppText
-                variant="body"
-                color="placeholder"
-                style={styles.centerText}
-              >
-                No foods found
-              </AppText>
-            )}
+            {!isSearching &&
+              !!searchQuery &&
+              (!searchResults || searchResults.length === 0) && (
+                <AppText
+                  variant="body"
+                  color="placeholder"
+                  style={styles.centerText}
+                >
+                  No foods found
+                </AppText>
+              )}
           </View>
         )}
       </View>
@@ -260,15 +248,6 @@ export default function Home() {
           Logout
         </AppText>
       </TouchableOpacity>
-      <AppButton
-        title="Test route"
-        onPress={async () => {
-          await client
-            .request("GET /search-foods", { query: "chicken" })
-            .then((res) => res.data)
-            .then(console.log);
-        }}
-      />
     </View>
   );
 }
